@@ -57,13 +57,16 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var HomePage = __webpack_require__(187);
-	var Cell = __webpack_require__(281);
-	_reactDom2.default.render(_react2.default.createElement(
+	// var Cell = require('Cell');
+	_reactDom2.default.render(
+	// <div>
+	//   <HomePage />,
+	//   {/* <Cell></Cell> */}
+	// </div>
+	_react2.default.createElement(
 	  'div',
 	  null,
-	  _react2.default.createElement(HomePage, null),
-	  ',',
-	  _react2.default.createElement(Cell, null)
+	  _react2.default.createElement(HomePage, null)
 	), document.getElementById('root'));
 
 /***/ }),
@@ -22317,7 +22320,15 @@
 
 	var _About2 = _interopRequireDefault(_About);
 
-	var _Account = __webpack_require__(252);
+	var _TableGame = __webpack_require__(252);
+
+	var _TableGame2 = _interopRequireDefault(_TableGame);
+
+	var _TableGameController = __webpack_require__(254);
+
+	var _TableGameController2 = _interopRequireDefault(_TableGameController);
+
+	var _Account = __webpack_require__(255);
 
 	var _Account2 = _interopRequireDefault(_Account);
 
@@ -22325,7 +22336,7 @@
 
 	var _history2 = _interopRequireDefault(_history);
 
-	var _SignIn = __webpack_require__(253);
+	var _SignIn = __webpack_require__(256);
 
 	var _SignIn2 = _interopRequireDefault(_SignIn);
 
@@ -22405,6 +22416,25 @@
 	                null,
 	                _react2.default.createElement(
 	                  _reactRouterDom.Link,
+	                  { to: '/tablegame' },
+	                  'TableGame'
+	                )
+	              ),
+	              ' ',
+	              _react2.default.createElement(
+	                'li',
+	                null,
+	                _react2.default.createElement(
+	                  _reactRouterDom.Link,
+	                  { to: '/tablegamecontroller' },
+	                  'tablegamecontroller'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'li',
+	                null,
+	                _react2.default.createElement(
+	                  _reactRouterDom.Link,
 	                  { to: '/topics' },
 	                  'Topics'
 	                )
@@ -22419,6 +22449,8 @@
 	                { className: 'main-route-place' },
 	                _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _Account2.default }),
 	                _react2.default.createElement(_reactRouterDom.Route, { path: '/about', component: _About2.default }),
+	                _react2.default.createElement(_reactRouterDom.Route, { path: '/tablegame', component: _TableGame2.default }),
+	                _react2.default.createElement(_reactRouterDom.Route, { path: '/tablegamecontroller', component: _TableGameController2.default }),
 	                _react2.default.createElement(_reactRouterDom.Route, { path: '/topics', component: Topics })
 	              )
 	            )
@@ -25686,7 +25718,7 @@
 	        _react2.default.createElement(
 	          'h2',
 	          null,
-	          'About'
+	          'Abouttttt'
 	        )
 	      );
 	    }
@@ -28028,11 +28060,402 @@
 
 	var _reactRedux = __webpack_require__(210);
 
-	var _SignIn = __webpack_require__(253);
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // var socket = io('http://localhost:8000');
+
+
+	var Cell = __webpack_require__(253);
+
+	// var play = false;
+	// var count = 0;
+	// var matrix = [];
+	// for (var i = 0; i < 20; i++) {
+	//     var row = [];
+	//     for (var j = 0; j < 20; j++) {
+	//         row.push(0);
+	//     }
+	//     matrix.push(row);
+	// }
+	// var countTurn = 0;
+	// var flag = true;
+	// var XO;
+
+	var TableGame = function (_React$Component) {
+	    _inherits(TableGame, _React$Component);
+
+	    function TableGame(props) {
+	        _classCallCheck(this, TableGame);
+
+	        return _possibleConstructorReturn(this, (TableGame.__proto__ || Object.getPrototypeOf(TableGame)).call(this, props));
+	    }
+
+	    _createClass(TableGame, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                null,
+	                _react2.default.createElement(
+	                    'h2',
+	                    null,
+	                    'Table'
+	                ),
+	                _react2.default.createElement(
+	                    'button',
+	                    { onClick: buildTable },
+	                    'Hello'
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { id: this.props.match },
+	                    _react2.default.createElement('h3', { id: this.props.turn }),
+	                    _react2.default.createElement(
+	                        'table',
+	                        null,
+	                        _react2.default.createElement('tbody', { id: this.props.tbmatch })
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+
+	    return TableGame;
+	}(_react2.default.Component);
+
+	// socket.on("server-send-result", function (data) {
+	//     alert(data);
+	//     document.getElementById("tb-match").innerHTML = "";
+	//     buildTable();
+
+
+	// });
+
+	// socket.on("server-send-cell", function (data) {
+	//     var i = data.row;
+	//     var j = data.col;
+	//     var w = i.toString() + j.toString();
+	//     var cell;
+	//     count = data.countPlay;
+	//     if (data.value == 1) {
+	//         cell = "X";
+	//         document.getElementById("turn").innerHTML = "Đến lượt O";
+
+	//     }
+	//     else {
+	//         cell = "O";
+	//         document.getElementById("turn").innerHTML = "Đến lượt X";
+	//     }
+	//     if (XO == cell) {
+	//         flag = false;
+	//     }
+	//     else {
+	//         flag = data.go;
+	//     }
+	//     matrix[i][j] = data.value;
+	//     document.getElementById(w).innerHTML = cell;
+	// });
+
+	function buildTable() {
+	    for (var i = 0; i < 20; i++) {
+	        var row = document.createElement("tr");
+	        for (var j = 0; j < 20; j++) {
+	            var cell = document.createElement("td");
+	            cell.setAttribute("class", "td-cell");
+	            cell.setAttribute("id", i.toString() + j.toString());
+	            cell.setAttribute("onClick", "change(this)");
+	            var cellText = document.createTextNode("");
+	            cell.appendChild(cellText);
+	            row.appendChild(cell);
+	        }
+
+	        document.getElementById("tb-match").appendChild(row);
+	    }
+	}
+	// buildTable();
+	// Hello();
+	// function Hello() {
+	//     alert("Hiiii");
+	// }
+	// window.change = function change(myobj) {
+	//     var excep = false;
+	//     if (flag == true) {
+	//         var value = myobj.innerHTML;
+	//         if (value == "") {
+	//             var t = (value === "" && count % 2 == 0) ? "X" : "O";
+	//             XO = t;
+	//             // document.getElementById("turn").innerHTML="Lượt "+((t == "X")? "O":"X" );
+	//             // myobj.innerHTML = t;
+	//             //alert("you clicked: cell "+myobj.cellIndex+", row:"+myobj.parentElement.rowIndex);
+	//             count++;
+	//             var trow = myobj.parentElement.rowIndex;
+	//             var tcol = myobj.cellIndex;
+	//             var number = (t == "X") ? 1 : 2;
+	//             var objectCell = {
+	//                 row: trow,
+	//                 col: tcol,
+	//                 value: number,
+	//                 countPlay: count,
+	//                 go: true
+	//             }
+	//             socket.emit("client-send-cell", objectCell);
+	//             // matrix[trow][tcol]= number;
+	//         }
+	//         else {
+	//             alert("Bạn không được đánh vào ô này!");
+	//             excep = true;
+	//         }
+
+	//     }
+	//     else {
+	//         alert("Đến lượt đối thủ");
+	//     }
+	//     flag = false;
+	//     if (excep == true) {
+	//         flag = true;
+	//     }
+
+
+	// }
+
+
+	module.exports = TableGame;
+
+/***/ }),
+/* 253 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRouterDom = __webpack_require__(188);
+
+	var _reactRedux = __webpack_require__(210);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Cell = function (_React$Component) {
+	    _inherits(Cell, _React$Component);
+
+	    function Cell(props) {
+	        _classCallCheck(this, Cell);
+
+	        var _this = _possibleConstructorReturn(this, (Cell.__proto__ || Object.getPrototypeOf(Cell)).call(this, props));
+
+	        _this.myEventActive = _this.myEventActive.bind(_this);
+	        return _this;
+	    }
+
+	    _createClass(Cell, [{
+	        key: 'myEventActive',
+	        value: function myEventActive() {
+	            this.props.myEvent();
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                null,
+	                _react2.default.createElement(
+	                    'h2',
+	                    null,
+	                    'Cell'
+	                ),
+	                _react2.default.createElement(
+	                    'button',
+	                    { onClick: this.myEventActive },
+	                    'EventCell'
+	                )
+	            );
+	        }
+	    }]);
+
+	    return Cell;
+	}(_react2.default.Component);
+
+	module.exports = Cell;
+
+/***/ }),
+/* 254 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRouterDom = __webpack_require__(188);
+
+	var _reactRedux = __webpack_require__(210);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var socket = io('http://localhost:8000');
+
+	var Cell = __webpack_require__(253);
+	var TableGame = __webpack_require__(252);
+
+	var play = false;
+	var count = 0;
+	var matrix = [];
+	for (var i = 0; i < 20; i++) {
+	    var row = [];
+	    for (var j = 0; j < 20; j++) {
+	        row.push(0);
+	    }
+	    matrix.push(row);
+	}
+	var countTurn = 0;
+	var flag = true;
+	var XO;
+
+	var TableGameController = function (_React$Component) {
+	    _inherits(TableGameController, _React$Component);
+
+	    function TableGameController(props) {
+	        _classCallCheck(this, TableGameController);
+
+	        return _possibleConstructorReturn(this, (TableGameController.__proto__ || Object.getPrototypeOf(TableGameController)).call(this, props));
+	    }
+
+	    _createClass(TableGameController, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                null,
+	                _react2.default.createElement(
+	                    'h3',
+	                    null,
+	                    'Hellooo'
+	                ),
+	                _react2.default.createElement(Cell, { myEvent: Hello }),
+	                _react2.default.createElement(TableGame, { match: 'match', turn: 'turn', tbmatch: 'tb-match' })
+	            );
+	        }
+	    }]);
+
+	    return TableGameController;
+	}(_react2.default.Component);
+
+	socket.on("server-send-result", function (data) {
+	    alert(data);
+	    document.getElementById("tb-match").innerHTML = "";
+	    buildTable();
+	});
+
+	socket.on("server-send-cell", function (data) {
+	    var i = data.row;
+	    var j = data.col;
+	    var w = i.toString() + j.toString();
+	    var cell;
+	    count = data.countPlay;
+	    if (data.value == 1) {
+	        cell = "X";
+	        document.getElementById("turn").innerHTML = "Đến lượt O";
+	    } else {
+	        cell = "O";
+	        document.getElementById("turn").innerHTML = "Đến lượt X";
+	    }
+	    if (XO == cell) {
+	        flag = false;
+	    } else {
+	        flag = data.go;
+	    }
+	    matrix[i][j] = data.value;
+	    document.getElementById(w).innerHTML = cell;
+	});
+
+	window.change = function change(myobj) {
+	    var excep = false;
+	    if (flag == true) {
+	        var value = myobj.innerHTML;
+	        if (value == "") {
+	            var t = value === "" && count % 2 == 0 ? "X" : "O";
+	            XO = t;
+	            // document.getElementById("turn").innerHTML="Lượt "+((t == "X")? "O":"X" );
+	            // myobj.innerHTML = t;
+	            //alert("you clicked: cell "+myobj.cellIndex+", row:"+myobj.parentElement.rowIndex);
+	            count++;
+	            var trow = myobj.parentElement.rowIndex;
+	            var tcol = myobj.cellIndex;
+	            var number = t == "X" ? 1 : 2;
+	            var objectCell = {
+	                row: trow,
+	                col: tcol,
+	                value: number,
+	                countPlay: count,
+	                go: true
+	            };
+	            socket.emit("client-send-cell", objectCell);
+	            // matrix[trow][tcol]= number;
+	        } else {
+	            alert("Bạn không được đánh vào ô này!");
+	            excep = true;
+	        }
+	    } else {
+	        alert("Đến lượt đối thủ");
+	    }
+	    flag = false;
+	    if (excep == true) {
+	        flag = true;
+	    }
+	};
+
+	// buildTable();
+	// Hello();
+	function Hello() {
+	    alert("Hiiii");
+	}
+
+	module.exports = TableGameController;
+
+/***/ }),
+/* 255 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRouterDom = __webpack_require__(188);
+
+	var _reactRedux = __webpack_require__(210);
+
+	var _SignIn = __webpack_require__(256);
 
 	var _SignIn2 = _interopRequireDefault(_SignIn);
 
-	var _AccountInfo = __webpack_require__(280);
+	var _AccountInfo = __webpack_require__(283);
 
 	var _AccountInfo2 = _interopRequireDefault(_AccountInfo);
 
@@ -28076,7 +28499,7 @@
 	})(Account);
 
 /***/ }),
-/* 253 */
+/* 256 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -28089,7 +28512,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _axios = __webpack_require__(254);
+	var _axios = __webpack_require__(257);
 
 	var _axios2 = _interopRequireDefault(_axios);
 
@@ -28201,22 +28624,22 @@
 	module.exports = (0, _reactRedux.connect)()(SignIn);
 
 /***/ }),
-/* 254 */
+/* 257 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(255);
+	module.exports = __webpack_require__(258);
 
 /***/ }),
-/* 255 */
+/* 258 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(256);
-	var bind = __webpack_require__(257);
-	var Axios = __webpack_require__(259);
-	var mergeConfig = __webpack_require__(276);
-	var defaults = __webpack_require__(265);
+	var utils = __webpack_require__(259);
+	var bind = __webpack_require__(260);
+	var Axios = __webpack_require__(262);
+	var mergeConfig = __webpack_require__(279);
+	var defaults = __webpack_require__(268);
 
 	/**
 	 * Create an instance of Axios
@@ -28249,15 +28672,15 @@
 	};
 
 	// Expose Cancel & CancelToken
-	axios.Cancel = __webpack_require__(277);
-	axios.CancelToken = __webpack_require__(278);
-	axios.isCancel = __webpack_require__(264);
+	axios.Cancel = __webpack_require__(280);
+	axios.CancelToken = __webpack_require__(281);
+	axios.isCancel = __webpack_require__(267);
 
 	// Expose all/spread
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
-	axios.spread = __webpack_require__(279);
+	axios.spread = __webpack_require__(282);
 
 	module.exports = axios;
 
@@ -28266,13 +28689,13 @@
 
 
 /***/ }),
-/* 256 */
+/* 259 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var bind = __webpack_require__(257);
-	var isBuffer = __webpack_require__(258);
+	var bind = __webpack_require__(260);
+	var isBuffer = __webpack_require__(261);
 
 	/*global toString:true*/
 
@@ -28606,7 +29029,7 @@
 
 
 /***/ }),
-/* 257 */
+/* 260 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -28623,7 +29046,7 @@
 
 
 /***/ }),
-/* 258 */
+/* 261 */
 /***/ (function(module, exports) {
 
 	/*!
@@ -28640,16 +29063,16 @@
 
 
 /***/ }),
-/* 259 */
+/* 262 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(256);
-	var buildURL = __webpack_require__(260);
-	var InterceptorManager = __webpack_require__(261);
-	var dispatchRequest = __webpack_require__(262);
-	var mergeConfig = __webpack_require__(276);
+	var utils = __webpack_require__(259);
+	var buildURL = __webpack_require__(263);
+	var InterceptorManager = __webpack_require__(264);
+	var dispatchRequest = __webpack_require__(265);
+	var mergeConfig = __webpack_require__(279);
 
 	/**
 	 * Create a new instance of Axios
@@ -28732,12 +29155,12 @@
 
 
 /***/ }),
-/* 260 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(256);
+	var utils = __webpack_require__(259);
 
 	function encode(val) {
 	  return encodeURIComponent(val).
@@ -28809,12 +29232,12 @@
 
 
 /***/ }),
-/* 261 */
+/* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(256);
+	var utils = __webpack_require__(259);
 
 	function InterceptorManager() {
 	  this.handlers = [];
@@ -28867,17 +29290,17 @@
 
 
 /***/ }),
-/* 262 */
+/* 265 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(256);
-	var transformData = __webpack_require__(263);
-	var isCancel = __webpack_require__(264);
-	var defaults = __webpack_require__(265);
-	var isAbsoluteURL = __webpack_require__(274);
-	var combineURLs = __webpack_require__(275);
+	var utils = __webpack_require__(259);
+	var transformData = __webpack_require__(266);
+	var isCancel = __webpack_require__(267);
+	var defaults = __webpack_require__(268);
+	var isAbsoluteURL = __webpack_require__(277);
+	var combineURLs = __webpack_require__(278);
 
 	/**
 	 * Throws a `Cancel` if cancellation has been requested.
@@ -28959,12 +29382,12 @@
 
 
 /***/ }),
-/* 263 */
+/* 266 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(256);
+	var utils = __webpack_require__(259);
 
 	/**
 	 * Transform the data for a request or a response
@@ -28985,7 +29408,7 @@
 
 
 /***/ }),
-/* 264 */
+/* 267 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -28996,13 +29419,13 @@
 
 
 /***/ }),
-/* 265 */
+/* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(256);
-	var normalizeHeaderName = __webpack_require__(266);
+	var utils = __webpack_require__(259);
+	var normalizeHeaderName = __webpack_require__(269);
 
 	var DEFAULT_CONTENT_TYPE = {
 	  'Content-Type': 'application/x-www-form-urlencoded'
@@ -29019,10 +29442,10 @@
 	  // Only Node.JS has a process variable that is of [[Class]] process
 	  if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
 	    // For node use HTTP adapter
-	    adapter = __webpack_require__(267);
+	    adapter = __webpack_require__(270);
 	  } else if (typeof XMLHttpRequest !== 'undefined') {
 	    // For browsers use XHR adapter
-	    adapter = __webpack_require__(267);
+	    adapter = __webpack_require__(270);
 	  }
 	  return adapter;
 	}
@@ -29101,12 +29524,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 266 */
+/* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(256);
+	var utils = __webpack_require__(259);
 
 	module.exports = function normalizeHeaderName(headers, normalizedName) {
 	  utils.forEach(headers, function processHeader(value, name) {
@@ -29119,17 +29542,17 @@
 
 
 /***/ }),
-/* 267 */
+/* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(256);
-	var settle = __webpack_require__(268);
-	var buildURL = __webpack_require__(260);
-	var parseHeaders = __webpack_require__(271);
-	var isURLSameOrigin = __webpack_require__(272);
-	var createError = __webpack_require__(269);
+	var utils = __webpack_require__(259);
+	var settle = __webpack_require__(271);
+	var buildURL = __webpack_require__(263);
+	var parseHeaders = __webpack_require__(274);
+	var isURLSameOrigin = __webpack_require__(275);
+	var createError = __webpack_require__(272);
 
 	module.exports = function xhrAdapter(config) {
 	  return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -29221,7 +29644,7 @@
 	    // This is only done if running in a standard browser environment.
 	    // Specifically not if we're in a web worker, or react-native.
 	    if (utils.isStandardBrowserEnv()) {
-	      var cookies = __webpack_require__(273);
+	      var cookies = __webpack_require__(276);
 
 	      // Add xsrf header
 	      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -29299,12 +29722,12 @@
 
 
 /***/ }),
-/* 268 */
+/* 271 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var createError = __webpack_require__(269);
+	var createError = __webpack_require__(272);
 
 	/**
 	 * Resolve or reject a Promise based on response status.
@@ -29330,12 +29753,12 @@
 
 
 /***/ }),
-/* 269 */
+/* 272 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var enhanceError = __webpack_require__(270);
+	var enhanceError = __webpack_require__(273);
 
 	/**
 	 * Create an Error with the specified message, config, error code, request and response.
@@ -29354,7 +29777,7 @@
 
 
 /***/ }),
-/* 270 */
+/* 273 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -29402,12 +29825,12 @@
 
 
 /***/ }),
-/* 271 */
+/* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(256);
+	var utils = __webpack_require__(259);
 
 	// Headers whose duplicates are ignored by node
 	// c.f. https://nodejs.org/api/http.html#http_message_headers
@@ -29461,12 +29884,12 @@
 
 
 /***/ }),
-/* 272 */
+/* 275 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(256);
+	var utils = __webpack_require__(259);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -29535,12 +29958,12 @@
 
 
 /***/ }),
-/* 273 */
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(256);
+	var utils = __webpack_require__(259);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -29594,7 +30017,7 @@
 
 
 /***/ }),
-/* 274 */
+/* 277 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -29614,7 +30037,7 @@
 
 
 /***/ }),
-/* 275 */
+/* 278 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -29634,12 +30057,12 @@
 
 
 /***/ }),
-/* 276 */
+/* 279 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(256);
+	var utils = __webpack_require__(259);
 
 	/**
 	 * Config-specific merge-function which creates a new config-object
@@ -29691,7 +30114,7 @@
 
 
 /***/ }),
-/* 277 */
+/* 280 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -29716,12 +30139,12 @@
 
 
 /***/ }),
-/* 278 */
+/* 281 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Cancel = __webpack_require__(277);
+	var Cancel = __webpack_require__(280);
 
 	/**
 	 * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -29779,7 +30202,7 @@
 
 
 /***/ }),
-/* 279 */
+/* 282 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -29812,7 +30235,7 @@
 
 
 /***/ }),
-/* 280 */
+/* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29827,7 +30250,7 @@
 
 	var _reactRedux = __webpack_require__(210);
 
-	var _SignIn = __webpack_require__(253);
+	var _SignIn = __webpack_require__(256);
 
 	var _SignIn2 = _interopRequireDefault(_SignIn);
 
@@ -29892,59 +30315,6 @@
 	module.exports = (0, _reactRedux.connect)(function (state) {
 	  return { username: state.username };
 	})(AccountInfo);
-
-/***/ }),
-/* 281 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactRouterDom = __webpack_require__(188);
-
-	var _reactRedux = __webpack_require__(210);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var Cell = function (_React$Component) {
-	    _inherits(Cell, _React$Component);
-
-	    function Cell() {
-	        _classCallCheck(this, Cell);
-
-	        return _possibleConstructorReturn(this, (Cell.__proto__ || Object.getPrototypeOf(Cell)).apply(this, arguments));
-	    }
-
-	    _createClass(Cell, [{
-	        key: 'render',
-	        value: function render() {
-	            return _react2.default.createElement(
-	                'div',
-	                null,
-	                _react2.default.createElement(
-	                    'h2',
-	                    null,
-	                    'Cell'
-	                )
-	            );
-	        }
-	    }]);
-
-	    return Cell;
-	}(_react2.default.Component);
-
-	module.exports = Cell;
 
 /***/ })
 /******/ ]);

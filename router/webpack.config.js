@@ -11,6 +11,8 @@ module.exports = {
       Cell: 'app/components/Cell.js',
       Topics: 'app/components/Topics.js',
       About: 'app/components/About.js',
+      TableGame: 'app/components/TableGame.js',
+      TableGameController: 'app/Process/TableGameController.js',
       Account: 'app/components/Account.js',
       SignIn: "app/components/SignIn.js",
       Login: "app/components/Login.js",

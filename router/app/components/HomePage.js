@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Route, Link } from 'react-router-dom';
 import About from 'About';
+import TableGame from 'TableGame';
+import TableGameController from 'TableGameController';
 import Account from 'Account';
 import history from 'history';
 import SignIn from 'SignIn';
@@ -38,6 +40,11 @@ class HomePage extends React.Component {
               <li>
                 <Link to="/about">About</Link>
               </li>
+              <li>
+                <Link to="/tablegame">TableGame</Link>
+              </li> <li>
+                <Link to="/tablegamecontroller">tablegamecontroller</Link>
+              </li>
 
               <li>
                 <Link to="/topics" >Topics</Link>
@@ -49,6 +56,8 @@ class HomePage extends React.Component {
               <div className="main-route-place">
                 <Route exact path="/" component={Account} />
                 <Route path="/about" component={About} />
+                <Route path="/tablegame" component={TableGame} />
+                <Route path="/tablegamecontroller" component={TableGameController} />
                 <Route path="/topics" component={Topics} />
               </div>
             </Provider>

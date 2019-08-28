@@ -1,0 +1,10 @@
+body{
+}
+.td-cell{
+    display:inline-block;
+    font-size:16pt;
+    width:20px;
+    text-align:center;
+    height:20px;
+    border:1px solid blue;
+}
