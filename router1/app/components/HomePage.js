@@ -20,14 +20,14 @@ var username = (state = null, action) => {
       return state;
   }
 }
-var roomin = (state = null, action) => {
-  switch (action.type) {
+var roomin = (state = null, action) =>{
+  switch (action.type){
     case 'joinroom':
       return action.roomin;
-    case 'outroom':
-      return null;
-    default:
-      return state;
+      case 'outroom':
+        return null;
+      default:
+        return state;
   }
 
 }
@@ -39,8 +39,8 @@ var store1 = redux.createStore(reducer1);
 
 //store.dispatch({type:'LOG_IN',username:'abc'});
 //store1.dispatch({type: 'joinroom', roomin: '12'});
-window.add = function add() {
-  store1.dispatch({ type: 'joinroom', roomin: '12' });
+window.add = function add(){
+  store1.dispatch({type: 'joinroom', roomin: '12'});
 }
 class HomePage extends React.Component {
 
@@ -79,8 +79,8 @@ class HomePage extends React.Component {
                 <Route exact path="/" component={Account} />
                 <Route path="/about" component={About} />
                 <Route path="/tablegame" component={TableGame} />
-                <Provider store={store1}>
-                  <Route path="/room" component={AccountInfo} /></Provider>
+                <Provider store ={store1}>
+                <Route path="/room" component={AccountInfo}/></Provider>
                 <Route path="/tablegamecontroller" component={TableGameController} />
                 <Route path="/topics" component={Topics} />
               </div>

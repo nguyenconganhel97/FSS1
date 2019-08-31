@@ -1,5 +1,5 @@
 import React from 'react';
-// import { BrowserRouter, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 class Cell extends React.Component {
     constructor(props) {
@@ -9,15 +9,11 @@ class Cell extends React.Component {
     myEventActive() {
         this.props.myEvent();
     }
-    myEventActive1() {
-        this.props.myEvent1();
-    }
     render() {
         return (
             <div>
                 <h2>Cell</h2>
-                {/* <button onClick={this.myEventActive}>EventCell</button> */}
-                {/* <button onClick={this.myEventActive1}>EventCell1</button> */}
+                <button onClick={this.myEventActive}>EventCell</button>
             </div>
         );
     }

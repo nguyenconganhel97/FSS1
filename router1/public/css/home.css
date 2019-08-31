@@ -1,4 +1,5 @@
 body{
+  background: #f6f6f6;
 }
 .td-cell{
     display:inline-block;
@@ -8,6 +9,95 @@ body{
     height:20px;
     border:1px solid blue;
 }
+#main{
+  position: relative;
+  background: #F5FFFA;
+  height: 600px;
+  width: 100%;
+}
+#main-game-left{
+  position: absolute;
+  left: 0px;
+  width: 200px;
+  height: 600px;
+  background: #E6E6FA;
+  border: #39ace7 2px solid;
+}
+#main-right{
+  position: absolute;
+  right: 0px;
+  width: 200px;
+  height: 610px;
+  background: #E6E6FA;
+  border: #39ace7 2px solid;
+}
+#main-game{
+  position: absolute;
+  left: 0px;
+  width: 1050px;
+  height: 610px;
+  background: #E6E6FA;
+  border: #39ace7 2px solid;
+}
+#list-online-head{
+  text-align: center;
+}
+
+#main-game-center{
+
+  position: absolute;
+  left: 250px;
+  width: 765px;
+  height: 600px;
+  background: #E6E6FA;
+  border: #39ace7 2px solid;
+ 
+}
+#room-left{
+  float: left;
+
+}
+#room-right{
+  float: right;
+  margin-right: 50px;
+  text-align: center;
+}
+#room-right-o{
+  margin-left: 20px;
+  float: right;
+}
+#room-right-x{
+  float: left;
+}
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+li {
+  float: left;
+}
+
+li  {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+li:hover:not(.active) {
+  background-color: #111;
+}
+
+.active {
+  background-color: #4CAF50;
+}
+
+
 
   
   /* FORM TYPOGRAPHY*/

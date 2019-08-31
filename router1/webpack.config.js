@@ -1,5 +1,5 @@
 module.exports = {
-  entry: './app/app1.js',
+  entry: './app/app.js',
   output: {
     path: __dirname,
     filename: './public/bundle.js'
@@ -17,8 +17,7 @@ module.exports = {
       SignIn: "app/components/SignIn.js",
       Login: "app/components/Login.js",
       AccountInfo: "app/components/AccountInfo.js",
-      RoomList: "app/components/RoomList.js",
-      OnlineList: 'app/components/OnlineList.js'
+      RoomList: "app/components/RoomList.js"
     }
   },
   module: {

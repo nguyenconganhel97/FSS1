@@ -25,7 +25,6 @@ for (var i = 0; i < a; i++) {
   }
   matrix.push(row);
 }
-var listIdSocket = [];
 
 app.get('/', (req, res) => res.render('home'));
 
@@ -40,74 +39,34 @@ io.on('connection', function (socket) {
       password: "",
       database: "caro"
     });
-
-
+    
+   
     con.connect(function (err) {
       if (err) throw err;
       con.query("SELECT * FROM user ", function (err, result, fields) {
         if (err) { throw err; }
-
+       
         for (var i = 0; i < result.length; i++) {
           if (result[i]["name"] == un && result[i]["password"] == ps) {
             socket.userName = un;
-            listIdSocket.push(socket.id);
+            
+
             res.send('success1');
             console.log('ok');
             return con;
           }
-
+          
         }
-        res.send('acb');
+       res.send('acb');
         return con;
       });
     });
   });
-
+  
   console.log('a user connected : ' + socket.id);
   // socket.userName = socketUsername;
-
-  socket.on("client-send-active", function (data) {
+  socket.on("client-send-hello", function (data) {
     console.log("Client said : " + data);
-    socket.emit("server-send-active", "OK");
-  });
-  socket.on("abc", function (data) {
-    console.log("vlueeeee : " + data);
-  });
-  socket.on("client-send-name-room", function (data) {
-    // console.log("Nam room : " + data);
-    // listUserRoom.push(socket.Username);
-    socket.join(data);
-    socket.nameRoom = data;
-    socket.emit("server-send-name-room", socket.nameRoom);
-    console.log("========");
-    // console.log(io.sockets.adapter.rooms.Room);
-    for (var x in io.sockets.adapter.rooms) {
-      console.log(x);
-      // console.log(io.sockets.clients(x));
-    }
-    console.log("-------");
-    var u = io.sockets.adapter.rooms[data].sockets;
-    console.log(io.sockets.adapter.rooms[data].sockets);
-    console.log(typeof u);
-    console.log("--------");
-    // io.sockets.in(socket.nameRoom).emit("server-send-user-in-room", listUserRoom);
-
-
-    listRoom = [];
-    for (var x in socket.adapter.rooms) {
-      listRoom.push(x);
-    }
-    console.log(listRoom);
-    for (var i = 0; i < listIdSocket.length; i++) {
-      var index = listRoom.indexOf(listIdSocket[i]);
-      if (index > -1) {
-        listRoom.splice(index, 1);
-      }
-      console.log("value : " + listIdSocket[i]);
-      // console.log(listIdSocket[i]);
-    }
-    console.log(listRoom);
-    io.sockets.emit("server-send-list-room", listRoom);
   });
   socket.on("client-send-cell", function (data) {
     console.log(data);

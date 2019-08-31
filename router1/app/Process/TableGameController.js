@@ -2,11 +2,10 @@ var socket = io('http://localhost:8000');
 import React from 'react';
 import { BrowserRouter, Route, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import About from 'About';
 var Cell = require('Cell');
 var TableGame = require("TableGame");
 var RoomList = require('RoomList');
-import { store1 } from 'HomePage'
+import {store1} from 'HomePage'
 var play = false;
 var count = 0;
 var matrix = [];
@@ -20,28 +19,23 @@ for (var i = 0; i < 20; i++) {
 var countTurn = 0;
 var flag = true;
 var XO;
-window.abc = socket;
 
 class TableGameController extends React.Component {
-
-
     constructor(props) {
         super(props);
 
-    }
-    //   window.clickRoom = function clickRoom(id){
+    } 
+//   window.clickRoom = function clickRoom(id){
 
-    //     window.alert("id" + id);
-    //    }
+//     window.alert("id" + id);
+//    }
     render() {
         return (
             <div>
-                {/* <h3>Hellooo</h3> */}
-                {/* <Cell myEvent={Hello}></Cell> */}
+                <h3>Hellooo</h3>
+                <Cell myEvent={Hello}></Cell>
                 {/* <TableGame match="match" turn="turn" tbmatch="tb-match"></TableGame> */}
-                {/* <RoomList></RoomList> */}
-                <TableGame g="ABC" match="match" turn="turn" tbmatch="tb-match"></TableGame>
-                <Cell></Cell>
+                <RoomList></RoomList>
             </div>
         );
     }
@@ -79,21 +73,11 @@ socket.on("server-send-cell", function (data) {
     matrix[i][j] = data.value;
     document.getElementById(w).innerHTML = cell;
 });
-window.clickRoom = function clickRoom(id) {
-    alert("Id " + id);
-    socket.emit("client-send-name-room", id);
-
-
-
-
-    //    var {dispatch} = this.props;
-    //   dispatch({type: 'joinroom', roomin: '12'});
-
-}
-window.D = function D(Id) {
-    alert(Id);
-    //    var {dispatch} = this.props;
-    //   dispatch({type: 'joinroom', roomin: '12'});
+window.clickRoom = function clickRoom(id){
+   alert("ID : " + id);
+//    var {dispatch} = this.props;
+//   dispatch({type: 'joinroom', roomin: '12'});
+   
 }
 window.change = function change(myobj) {
     var excep = false;
