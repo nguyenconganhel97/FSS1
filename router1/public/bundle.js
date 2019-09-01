@@ -62,11 +62,7 @@
 
 	var _TableGame2 = _interopRequireDefault(_TableGame);
 
-	var _TableGameController = __webpack_require__(253);
-
-	var _TableGameController2 = _interopRequireDefault(_TableGameController);
-
-	var _Account = __webpack_require__(255);
+	var _Account = __webpack_require__(254);
 
 	var _Account2 = _interopRequireDefault(_Account);
 
@@ -74,11 +70,11 @@
 
 	var _history2 = _interopRequireDefault(_history);
 
-	var _SignIn = __webpack_require__(256);
+	var _SignIn = __webpack_require__(255);
 
 	var _SignIn2 = _interopRequireDefault(_SignIn);
 
-	var _AccountInfo = __webpack_require__(283);
+	var _AccountInfo = __webpack_require__(282);
 
 	var _AccountInfo2 = _interopRequireDefault(_AccountInfo);
 
@@ -89,12 +85,29 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var socket = io('http://localhost:8000');
+	// import TableGameController from 'TableGameController';
 
-	var Menu = __webpack_require__(285);
-	var RoomList = __webpack_require__(284);
+	var Menu = __webpack_require__(284);
+	var RoomList = __webpack_require__(283);
+	var Viewer = __webpack_require__(287);
 
-	var HomePage = __webpack_require__(254);
+	var HomePage = __webpack_require__(285);
 	// var Cell = require('Cell');
+
+	var play = false;
+	var count = 0;
+	var matrix = [];
+	for (var i = 0; i < 20; i++) {
+	  var row = [];
+	  for (var j = 0; j < 20; j++) {
+	    row.push(0);
+	  }
+	  matrix.push(row);
+	}
+	var countTurn = 0;
+	var flag = true;
+	var XO;
+
 	_reactDom2.default.render(_react2.default.createElement(
 	  'div',
 	  null,
@@ -108,15 +121,114 @@
 	  ), document.getElementById("main-game"));
 	}
 	function Hello() {
-	  alert("Hihii");
+	  alert("Hihii");;
 	  _reactDom2.default.unmountComponentAtNode(document.getElementById('root'));
 	}
-	window.clickRoom = function clickRoom(id) {
-	  alert("ID : " + id);
+	socket.on("server-send-user-in-room", function (data) {
+	  // document.getElementById("user-in-room").innerHTML = "";
+	  _reactDom2.default.render(_react2.default.createElement(
+	    'div',
+	    null,
+	    _react2.default.createElement(
+	      'div',
+	      null,
+	      data.map(function (value, index) {
+	        return _react2.default.createElement(
+	          'p',
+	          { key: index },
+	          value
+	        );
+	      })
+	    )
+	  ), document.getElementById("user-in-room"));
+	});
+	socket.on("server-send-result", function (data) {
+	  alert(data);
+	  document.getElementById("main-game").innerHTML = "";
 	  _reactDom2.default.render(_react2.default.createElement(
 	    'div',
 	    { id: 'main-game-center' },
 	    _react2.default.createElement(_TableGame2.default, { match: 'match', turn: 'turn', tbmatch: 'tb-match' })
+	  ), document.getElementById("main-game"));
+	});
+	socket.on("server-send-cell", function (data) {
+	  var i = data.row;
+	  var j = data.col;
+	  var w = i.toString() + j.toString();
+	  var cell;
+	  count = data.countPlay;
+	  if (data.value == 1) {
+	    cell = "X";
+	    document.getElementById("turn").innerHTML = "Đến lượt O";
+	  } else {
+	    cell = "O";
+	    document.getElementById("turn").innerHTML = "Đến lượt X";
+	  }
+	  if (XO == cell) {
+	    flag = false;
+	  } else {
+	    flag = data.go;
+	  }
+	  matrix[i][j] = data.value;
+	  document.getElementById(w).innerHTML = cell;
+	});
+	window.change = function change(myobj) {
+	  var excep = false;
+	  if (flag == true) {
+	    var value = myobj.innerHTML;
+	    if (value == "") {
+	      var t = value === "" && count % 2 == 0 ? "X" : "O";
+	      XO = t;
+	      // document.getElementById("turn").innerHTML="Lượt "+((t == "X")? "O":"X" );
+	      // myobj.innerHTML = t;
+	      //alert("you clicked: cell "+myobj.cellIndex+", row:"+myobj.parentElement.rowIndex);
+	      count++;
+	      var trow = myobj.parentElement.rowIndex;
+	      var tcol = myobj.cellIndex;
+	      var number = t == "X" ? 1 : 2;
+	      var objectCell = {
+	        row: trow,
+	        col: tcol,
+	        value: number,
+	        countPlay: count,
+	        go: true
+	      };
+	      socket.emit("client-send-cell", objectCell);
+	      // matrix[trow][tcol]= number;
+	    } else {
+	      alert("Bạn không được đánh vào ô này!");
+	      excep = true;
+	    }
+	  } else {
+	    alert("Đến lượt đối thủ");
+	  }
+	  flag = false;
+	  if (excep == true) {
+	    flag = true;
+	  }
+	};
+	window.clickRoom = function clickRoom(idRoom) {
+	  alert("ID : " + idRoom);
+
+	  socket.emit("client-send-name-room", idRoom);
+	  _reactDom2.default.render(_react2.default.createElement(
+	    'div',
+	    null,
+	    _react2.default.createElement(
+	      'div',
+	      { id: 'main-game-left' },
+	      _react2.default.createElement(
+	        'h3',
+	        null,
+	        'Danh s\xE1ch ng\u01B0\u1EDDi trong ph\xF2ng'
+	      ),
+	      _react2.default.createElement('div', { id: 'user-in-room' })
+	    ),
+	    _react2.default.createElement(
+	      'div',
+	      { id: 'main-game-center' },
+	      _react2.default.createElement(_TableGame2.default, { match: 'match', turn: 'turn', tbmatch: 'tb-match' })
+	    )
 	  ), document.getElementById("main-game"));
 	};
 	$(document).ready(function () {
@@ -27865,7 +27977,7 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var Cell = __webpack_require__(252);
-	var Team = __webpack_require__(286);
+	var Team = __webpack_require__(253);
 
 	var TableGame = function (_React$Component) {
 	    _inherits(TableGame, _React$Component);
@@ -27877,7 +27989,7 @@
 
 	        _this.changeState = _this.changeState.bind(_this);
 	        _this.state = {
-	            statePlayer: "Join Room"
+	            statePlayer: "Play"
 	        };
 
 	        return _this;
@@ -27886,7 +27998,7 @@
 	    _createClass(TableGame, [{
 	        key: 'changeState',
 	        value: function changeState() {
-	            this.state.statePlayer = "In Room";
+	            this.state.statePlayer = "Play";
 	            this.setState(this.state);
 	        }
 	    }, {
@@ -27943,6 +28055,12 @@
 	        document.getElementById("tb-match").appendChild(row);
 	    }
 	    _reactDom2.default.render(_react2.default.createElement(Team, null), document.getElementById("room-right"));
+	    // ReactDOM.render(
+	    //     <div id = "main-game-left">
+	    //         <h3>Danh sach nguoi trong phon</h3>
+	    //     </div>,
+	    //     document.getElementById("main-game")
+	    // );
 	}
 
 	module.exports = TableGame;
@@ -28017,19 +28135,13 @@
 /* 253 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
-
-	var _reactRouterDom = __webpack_require__(188);
-
-	var _reactRedux = __webpack_require__(209);
-
-	var _HomePage = __webpack_require__(254);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -28039,135 +28151,67 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var socket = io('http://localhost:8000');
+	;
 
-	var Cell = __webpack_require__(252);
-	var TableGame = __webpack_require__(251);
-	var RoomList = __webpack_require__(284);
+	var Team = function (_React$Component) {
+	    _inherits(Team, _React$Component);
 
-	var play = false;
-	var count = 0;
-	var matrix = [];
-	for (var i = 0; i < 20; i++) {
-	    var row = [];
-	    for (var j = 0; j < 20; j++) {
-	        row.push(0);
+	    function Team(props) {
+	        _classCallCheck(this, Team);
+
+	        var _this = _possibleConstructorReturn(this, (Team.__proto__ || Object.getPrototypeOf(Team)).call(this, props));
+
+	        _this.myEventActive = _this.myEventActive.bind(_this);
+	        return _this;
 	    }
-	    matrix.push(row);
-	}
-	var countTurn = 0;
-	var flag = true;
-	var XO;
 
-	var TableGameController = function (_React$Component) {
-	    _inherits(TableGameController, _React$Component);
-
-	    function TableGameController(props) {
-	        _classCallCheck(this, TableGameController);
-
-	        return _possibleConstructorReturn(this, (TableGameController.__proto__ || Object.getPrototypeOf(TableGameController)).call(this, props));
-	    }
-	    //   window.clickRoom = function clickRoom(id){
-
-	    //     window.alert("id" + id);
-	    //    }
-
-
-	    _createClass(TableGameController, [{
-	        key: 'render',
+	    _createClass(Team, [{
+	        key: "myEventActive",
+	        value: function myEventActive() {
+	            this.props.myEvent();
+	        }
+	    }, {
+	        key: "render",
 	        value: function render() {
 	            return _react2.default.createElement(
-	                'div',
+	                "div",
 	                null,
 	                _react2.default.createElement(
-	                    'h3',
-	                    null,
-	                    'Hellooo'
+	                    "div",
+	                    { id: "room-right-x" },
+	                    _react2.default.createElement(
+	                        "h3",
+	                        null,
+	                        "Team X"
+	                    ),
+	                    _react2.default.createElement(
+	                        "h2",
+	                        null,
+	                        "2"
+	                    )
 	                ),
-	                _react2.default.createElement(Cell, { myEvent: Hello }),
-	                _react2.default.createElement(RoomList, null)
+	                _react2.default.createElement(
+	                    "div",
+	                    { id: "room-right-o" },
+	                    _react2.default.createElement(
+	                        "h3",
+	                        null,
+	                        "Team O"
+	                    ),
+	                    _react2.default.createElement(
+	                        "h2",
+	                        null,
+	                        "2"
+	                    )
+	                )
 	            );
 	        }
 	    }]);
 
-	    return TableGameController;
+	    return Team;
 	}(_react2.default.Component);
 
-	socket.on("server-send-result", function (data) {
-	    alert(data);
-	    document.getElementById("tb-match").innerHTML = "";
-	    buildTable();
-	});
-
-	socket.on("server-send-cell", function (data) {
-	    var i = data.row;
-	    var j = data.col;
-	    var w = i.toString() + j.toString();
-	    var cell;
-	    count = data.countPlay;
-	    if (data.value == 1) {
-	        cell = "X";
-	        document.getElementById("turn").innerHTML = "Đến lượt O";
-	    } else {
-	        cell = "O";
-	        document.getElementById("turn").innerHTML = "Đến lượt X";
-	    }
-	    if (XO == cell) {
-	        flag = false;
-	    } else {
-	        flag = data.go;
-	    }
-	    matrix[i][j] = data.value;
-	    document.getElementById(w).innerHTML = cell;
-	});
-	window.clickRoom = function clickRoom(id) {
-	    alert("ID : " + id);
-	    //    var {dispatch} = this.props;
-	    //   dispatch({type: 'joinroom', roomin: '12'});
-	};
-	window.change = function change(myobj) {
-	    var excep = false;
-	    if (flag == true) {
-	        var value = myobj.innerHTML;
-	        if (value == "") {
-	            var t = value === "" && count % 2 == 0 ? "X" : "O";
-	            XO = t;
-	            // document.getElementById("turn").innerHTML="Lượt "+((t == "X")? "O":"X" );
-	            // myobj.innerHTML = t;
-	            //alert("you clicked: cell "+myobj.cellIndex+", row:"+myobj.parentElement.rowIndex);
-	            count++;
-	            var trow = myobj.parentElement.rowIndex;
-	            var tcol = myobj.cellIndex;
-	            var number = t == "X" ? 1 : 2;
-	            var objectCell = {
-	                row: trow,
-	                col: tcol,
-	                value: number,
-	                countPlay: count,
-	                go: true
-	            };
-	            socket.emit("client-send-cell", objectCell);
-	            // matrix[trow][tcol]= number;
-	        } else {
-	            alert("Bạn không được đánh vào ô này!");
-	            excep = true;
-	        }
-	    } else {
-	        alert("Đến lượt đối thủ");
-	    }
-	    flag = false;
-	    if (excep == true) {
-	        flag = true;
-	    }
-	};
-
-	// buildTable();
-	// Hello();
-	function Hello() {
-	    alert("Hiiii");
-	}
-
-	module.exports = (0, _reactRedux.connect)()(TableGameController);
+	module.exports = Team;
 
 /***/ }),
 /* 254 */
@@ -28183,324 +28227,17 @@
 
 	var _reactRouterDom = __webpack_require__(188);
 
-	var _About = __webpack_require__(187);
+	var _reactRedux = __webpack_require__(209);
 
-	var _About2 = _interopRequireDefault(_About);
-
-	var _TableGame = __webpack_require__(251);
-
-	var _TableGame2 = _interopRequireDefault(_TableGame);
-
-	var _TableGameController = __webpack_require__(253);
-
-	var _TableGameController2 = _interopRequireDefault(_TableGameController);
-
-	var _Account = __webpack_require__(255);
-
-	var _Account2 = _interopRequireDefault(_Account);
-
-	var _history = __webpack_require__(198);
-
-	var _history2 = _interopRequireDefault(_history);
-
-	var _SignIn = __webpack_require__(256);
+	var _SignIn = __webpack_require__(255);
 
 	var _SignIn2 = _interopRequireDefault(_SignIn);
 
-	var _AccountInfo = __webpack_require__(283);
+	var _AccountInfo = __webpack_require__(282);
 
 	var _AccountInfo2 = _interopRequireDefault(_AccountInfo);
 
-	var _RoomList = __webpack_require__(284);
-
-	var _RoomList2 = _interopRequireDefault(_RoomList);
-
-	var _reactRedux = __webpack_require__(209);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var redux = __webpack_require__(224);
-	var username = function username() {
-	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-	  var action = arguments[1];
-
-	  switch (action.type) {
-	    case 'LOG_IN':
-	      return action.username;
-	    case 'LOG_OUT':
-	      return null;
-	    default:
-	      return state;
-	  }
-	};
-	var roomin = function roomin() {
-	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-	  var action = arguments[1];
-
-	  switch (action.type) {
-	    case 'joinroom':
-	      return action.roomin;
-	    case 'outroom':
-	      return null;
-	    default:
-	      return state;
-	  }
-	};
-	var reducer = redux.combineReducers({ username: username });
-	var store = redux.createStore(reducer);
-	var reducer1 = redux.combineReducers({ roomin: roomin });
-	var store1 = redux.createStore(reducer1);
-
-	//store.dispatch({type:'LOG_IN',username:'abc'});
-	//store1.dispatch({type: 'joinroom', roomin: '12'});
-	window.add = function add() {
-	  store1.dispatch({ type: 'joinroom', roomin: '12' });
-	};
-
-	var HomePage = function (_React$Component) {
-	  _inherits(HomePage, _React$Component);
-
-	  function HomePage() {
-	    _classCallCheck(this, HomePage);
-
-	    return _possibleConstructorReturn(this, (HomePage.__proto__ || Object.getPrototypeOf(HomePage)).apply(this, arguments));
-	  }
-
-	  _createClass(HomePage, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2.default.createElement(
-	        'div',
-	        null,
-	        _react2.default.createElement(
-	          _reactRouterDom.BrowserRouter,
-	          { history: _history2.default },
-	          _react2.default.createElement(
-	            'div',
-	            null,
-	            _react2.default.createElement(
-	              'ul',
-	              null,
-	              _react2.default.createElement(
-	                'li',
-	                null,
-	                _react2.default.createElement(
-	                  _reactRouterDom.Link,
-	                  { to: '/' },
-	                  'Home'
-	                )
-	              ),
-	              _react2.default.createElement(
-	                'li',
-	                null,
-	                _react2.default.createElement(
-	                  _reactRouterDom.Link,
-	                  { to: '/about' },
-	                  'About'
-	                )
-	              ),
-	              _react2.default.createElement(
-	                'li',
-	                null,
-	                _react2.default.createElement(
-	                  _reactRouterDom.Link,
-	                  { to: '/room' },
-	                  'Room'
-	                )
-	              ),
-	              _react2.default.createElement(
-	                'li',
-	                null,
-	                _react2.default.createElement(
-	                  _reactRouterDom.Link,
-	                  { to: '/tablegame' },
-	                  'TableGame'
-	                )
-	              ),
-	              ' ',
-	              _react2.default.createElement(
-	                'li',
-	                null,
-	                _react2.default.createElement(
-	                  _reactRouterDom.Link,
-	                  { to: '/tablegamecontroller' },
-	                  'tablegamecontroller'
-	                )
-	              ),
-	              _react2.default.createElement(
-	                'li',
-	                null,
-	                _react2.default.createElement(
-	                  _reactRouterDom.Link,
-	                  { to: '/topics' },
-	                  'Topics'
-	                )
-	              )
-	            ),
-	            _react2.default.createElement('hr', null),
-	            _react2.default.createElement(
-	              _reactRedux.Provider,
-	              { store: store },
-	              _react2.default.createElement(
-	                'div',
-	                { className: 'main-route-place' },
-	                _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _Account2.default }),
-	                _react2.default.createElement(_reactRouterDom.Route, { path: '/about', component: _About2.default }),
-	                _react2.default.createElement(_reactRouterDom.Route, { path: '/tablegame', component: _TableGame2.default }),
-	                _react2.default.createElement(
-	                  _reactRedux.Provider,
-	                  { store: store1 },
-	                  _react2.default.createElement(_reactRouterDom.Route, { path: '/room', component: _AccountInfo2.default })
-	                ),
-	                _react2.default.createElement(_reactRouterDom.Route, { path: '/tablegamecontroller', component: _TableGameController2.default }),
-	                _react2.default.createElement(_reactRouterDom.Route, { path: '/topics', component: Topics })
-	              )
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }]);
-
-	  return HomePage;
-	}(_react2.default.Component);
-
-	var Topics = function (_React$Component2) {
-	  _inherits(Topics, _React$Component2);
-
-	  function Topics() {
-	    _classCallCheck(this, Topics);
-
-	    return _possibleConstructorReturn(this, (Topics.__proto__ || Object.getPrototypeOf(Topics)).apply(this, arguments));
-	  }
-
-	  _createClass(Topics, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2.default.createElement(
-	        'div',
-	        null,
-	        _react2.default.createElement(
-	          'h2',
-	          null,
-	          'Topics'
-	        ),
-	        _react2.default.createElement(
-	          'ul',
-	          null,
-	          _react2.default.createElement(
-	            'li',
-	            null,
-	            _react2.default.createElement(
-	              _reactRouterDom.Link,
-	              { to: this.props.match.url + '/rendering' },
-	              'Rendering with React'
-	            )
-	          ),
-	          _react2.default.createElement(
-	            'li',
-	            null,
-	            _react2.default.createElement(
-	              _reactRouterDom.Link,
-	              { to: this.props.match.url + '/components' },
-	              'Components'
-	            )
-	          ),
-	          _react2.default.createElement(
-	            'li',
-	            null,
-	            _react2.default.createElement(
-	              _reactRouterDom.Link,
-	              { to: this.props.match.url + '/props-v-state' },
-	              'Props v. State'
-	            )
-	          )
-	        ),
-	        _react2.default.createElement(
-	          'div',
-	          { className: 'secondary-route-place' },
-	          _react2.default.createElement(_reactRouterDom.Route, {
-	            path: this.props.match.url + '/:topicId',
-	            component: Topic }),
-	          _react2.default.createElement(_reactRouterDom.Route, {
-	            exact: true,
-	            path: this.props.match.url,
-	            render: function render() {
-	              return _react2.default.createElement(
-	                'h3',
-	                null,
-	                'Please select a topic.'
-	              );
-	            }
-	          })
-	        )
-	      );
-	    }
-	  }]);
-
-	  return Topics;
-	}(_react2.default.Component);
-
-	var Topic = function (_React$Component3) {
-	  _inherits(Topic, _React$Component3);
-
-	  function Topic() {
-	    _classCallCheck(this, Topic);
-
-	    return _possibleConstructorReturn(this, (Topic.__proto__ || Object.getPrototypeOf(Topic)).apply(this, arguments));
-	  }
-
-	  _createClass(Topic, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2.default.createElement(
-	        'div',
-	        null,
-	        _react2.default.createElement(
-	          'h3',
-	          null,
-	          this.props.match.params.topicId
-	        )
-	      );
-	    }
-	  }]);
-
-	  return Topic;
-	}(_react2.default.Component);
-
-	module.exports = HomePage;
-
-/***/ }),
-/* 255 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactRouterDom = __webpack_require__(188);
-
-	var _reactRedux = __webpack_require__(209);
-
-	var _SignIn = __webpack_require__(256);
-
-	var _SignIn2 = _interopRequireDefault(_SignIn);
-
-	var _AccountInfo = __webpack_require__(283);
-
-	var _AccountInfo2 = _interopRequireDefault(_AccountInfo);
-
-	var _RoomList = __webpack_require__(284);
+	var _RoomList = __webpack_require__(283);
 
 	var _RoomList2 = _interopRequireDefault(_RoomList);
 
@@ -28544,7 +28281,7 @@
 	})(Account);
 
 /***/ }),
-/* 256 */
+/* 255 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -28557,7 +28294,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _axios = __webpack_require__(257);
+	var _axios = __webpack_require__(256);
 
 	var _axios2 = _interopRequireDefault(_axios);
 
@@ -28671,22 +28408,22 @@
 	module.exports = (0, _reactRedux.connect)()(SignIn);
 
 /***/ }),
-/* 257 */
+/* 256 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(258);
+	module.exports = __webpack_require__(257);
 
 /***/ }),
-/* 258 */
+/* 257 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(259);
-	var bind = __webpack_require__(260);
-	var Axios = __webpack_require__(262);
-	var mergeConfig = __webpack_require__(279);
-	var defaults = __webpack_require__(268);
+	var utils = __webpack_require__(258);
+	var bind = __webpack_require__(259);
+	var Axios = __webpack_require__(261);
+	var mergeConfig = __webpack_require__(278);
+	var defaults = __webpack_require__(267);
 
 	/**
 	 * Create an instance of Axios
@@ -28719,15 +28456,15 @@
 	};
 
 	// Expose Cancel & CancelToken
-	axios.Cancel = __webpack_require__(280);
-	axios.CancelToken = __webpack_require__(281);
-	axios.isCancel = __webpack_require__(267);
+	axios.Cancel = __webpack_require__(279);
+	axios.CancelToken = __webpack_require__(280);
+	axios.isCancel = __webpack_require__(266);
 
 	// Expose all/spread
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
-	axios.spread = __webpack_require__(282);
+	axios.spread = __webpack_require__(281);
 
 	module.exports = axios;
 
@@ -28736,13 +28473,13 @@
 
 
 /***/ }),
-/* 259 */
+/* 258 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var bind = __webpack_require__(260);
-	var isBuffer = __webpack_require__(261);
+	var bind = __webpack_require__(259);
+	var isBuffer = __webpack_require__(260);
 
 	/*global toString:true*/
 
@@ -29076,7 +28813,7 @@
 
 
 /***/ }),
-/* 260 */
+/* 259 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -29093,7 +28830,7 @@
 
 
 /***/ }),
-/* 261 */
+/* 260 */
 /***/ (function(module, exports) {
 
 	/*!
@@ -29110,16 +28847,16 @@
 
 
 /***/ }),
-/* 262 */
+/* 261 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(259);
-	var buildURL = __webpack_require__(263);
-	var InterceptorManager = __webpack_require__(264);
-	var dispatchRequest = __webpack_require__(265);
-	var mergeConfig = __webpack_require__(279);
+	var utils = __webpack_require__(258);
+	var buildURL = __webpack_require__(262);
+	var InterceptorManager = __webpack_require__(263);
+	var dispatchRequest = __webpack_require__(264);
+	var mergeConfig = __webpack_require__(278);
 
 	/**
 	 * Create a new instance of Axios
@@ -29202,12 +28939,12 @@
 
 
 /***/ }),
-/* 263 */
+/* 262 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(259);
+	var utils = __webpack_require__(258);
 
 	function encode(val) {
 	  return encodeURIComponent(val).
@@ -29279,12 +29016,12 @@
 
 
 /***/ }),
-/* 264 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(259);
+	var utils = __webpack_require__(258);
 
 	function InterceptorManager() {
 	  this.handlers = [];
@@ -29337,17 +29074,17 @@
 
 
 /***/ }),
-/* 265 */
+/* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(259);
-	var transformData = __webpack_require__(266);
-	var isCancel = __webpack_require__(267);
-	var defaults = __webpack_require__(268);
-	var isAbsoluteURL = __webpack_require__(277);
-	var combineURLs = __webpack_require__(278);
+	var utils = __webpack_require__(258);
+	var transformData = __webpack_require__(265);
+	var isCancel = __webpack_require__(266);
+	var defaults = __webpack_require__(267);
+	var isAbsoluteURL = __webpack_require__(276);
+	var combineURLs = __webpack_require__(277);
 
 	/**
 	 * Throws a `Cancel` if cancellation has been requested.
@@ -29429,12 +29166,12 @@
 
 
 /***/ }),
-/* 266 */
+/* 265 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(259);
+	var utils = __webpack_require__(258);
 
 	/**
 	 * Transform the data for a request or a response
@@ -29455,7 +29192,7 @@
 
 
 /***/ }),
-/* 267 */
+/* 266 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -29466,13 +29203,13 @@
 
 
 /***/ }),
-/* 268 */
+/* 267 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(259);
-	var normalizeHeaderName = __webpack_require__(269);
+	var utils = __webpack_require__(258);
+	var normalizeHeaderName = __webpack_require__(268);
 
 	var DEFAULT_CONTENT_TYPE = {
 	  'Content-Type': 'application/x-www-form-urlencoded'
@@ -29489,10 +29226,10 @@
 	  // Only Node.JS has a process variable that is of [[Class]] process
 	  if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
 	    // For node use HTTP adapter
-	    adapter = __webpack_require__(270);
+	    adapter = __webpack_require__(269);
 	  } else if (typeof XMLHttpRequest !== 'undefined') {
 	    // For browsers use XHR adapter
-	    adapter = __webpack_require__(270);
+	    adapter = __webpack_require__(269);
 	  }
 	  return adapter;
 	}
@@ -29571,12 +29308,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 269 */
+/* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(259);
+	var utils = __webpack_require__(258);
 
 	module.exports = function normalizeHeaderName(headers, normalizedName) {
 	  utils.forEach(headers, function processHeader(value, name) {
@@ -29589,17 +29326,17 @@
 
 
 /***/ }),
-/* 270 */
+/* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(259);
-	var settle = __webpack_require__(271);
-	var buildURL = __webpack_require__(263);
-	var parseHeaders = __webpack_require__(274);
-	var isURLSameOrigin = __webpack_require__(275);
-	var createError = __webpack_require__(272);
+	var utils = __webpack_require__(258);
+	var settle = __webpack_require__(270);
+	var buildURL = __webpack_require__(262);
+	var parseHeaders = __webpack_require__(273);
+	var isURLSameOrigin = __webpack_require__(274);
+	var createError = __webpack_require__(271);
 
 	module.exports = function xhrAdapter(config) {
 	  return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -29691,7 +29428,7 @@
 	    // This is only done if running in a standard browser environment.
 	    // Specifically not if we're in a web worker, or react-native.
 	    if (utils.isStandardBrowserEnv()) {
-	      var cookies = __webpack_require__(276);
+	      var cookies = __webpack_require__(275);
 
 	      // Add xsrf header
 	      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -29769,12 +29506,12 @@
 
 
 /***/ }),
-/* 271 */
+/* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var createError = __webpack_require__(272);
+	var createError = __webpack_require__(271);
 
 	/**
 	 * Resolve or reject a Promise based on response status.
@@ -29800,12 +29537,12 @@
 
 
 /***/ }),
-/* 272 */
+/* 271 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var enhanceError = __webpack_require__(273);
+	var enhanceError = __webpack_require__(272);
 
 	/**
 	 * Create an Error with the specified message, config, error code, request and response.
@@ -29824,7 +29561,7 @@
 
 
 /***/ }),
-/* 273 */
+/* 272 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -29872,12 +29609,12 @@
 
 
 /***/ }),
-/* 274 */
+/* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(259);
+	var utils = __webpack_require__(258);
 
 	// Headers whose duplicates are ignored by node
 	// c.f. https://nodejs.org/api/http.html#http_message_headers
@@ -29931,12 +29668,12 @@
 
 
 /***/ }),
-/* 275 */
+/* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(259);
+	var utils = __webpack_require__(258);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -30005,12 +29742,12 @@
 
 
 /***/ }),
-/* 276 */
+/* 275 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(259);
+	var utils = __webpack_require__(258);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -30064,7 +29801,7 @@
 
 
 /***/ }),
-/* 277 */
+/* 276 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -30084,7 +29821,7 @@
 
 
 /***/ }),
-/* 278 */
+/* 277 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -30104,12 +29841,12 @@
 
 
 /***/ }),
-/* 279 */
+/* 278 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(259);
+	var utils = __webpack_require__(258);
 
 	/**
 	 * Config-specific merge-function which creates a new config-object
@@ -30161,7 +29898,7 @@
 
 
 /***/ }),
-/* 280 */
+/* 279 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -30186,12 +29923,12 @@
 
 
 /***/ }),
-/* 281 */
+/* 280 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Cancel = __webpack_require__(280);
+	var Cancel = __webpack_require__(279);
 
 	/**
 	 * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -30249,7 +29986,7 @@
 
 
 /***/ }),
-/* 282 */
+/* 281 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -30282,7 +30019,7 @@
 
 
 /***/ }),
-/* 283 */
+/* 282 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30297,7 +30034,7 @@
 
 	var _reactRedux = __webpack_require__(209);
 
-	var _SignIn = __webpack_require__(256);
+	var _SignIn = __webpack_require__(255);
 
 	var _SignIn2 = _interopRequireDefault(_SignIn);
 
@@ -30305,7 +30042,7 @@
 
 	var _About2 = _interopRequireDefault(_About);
 
-	var _RoomList = __webpack_require__(284);
+	var _RoomList = __webpack_require__(283);
 
 	var _RoomList2 = _interopRequireDefault(_RoomList);
 
@@ -30362,7 +30099,7 @@
 	})(AccountInfo);
 
 /***/ }),
-/* 284 */
+/* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30377,7 +30114,7 @@
 
 	var _reactRouterDom = __webpack_require__(188);
 
-	var _axios = __webpack_require__(257);
+	var _axios = __webpack_require__(256);
 
 	var _axios2 = _interopRequireDefault(_axios);
 
@@ -30541,7 +30278,7 @@
 	module.exports = RoomList;
 
 /***/ }),
-/* 285 */
+/* 284 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -30612,10 +30349,440 @@
 	module.exports = Menu;
 
 /***/ }),
+/* 285 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRouterDom = __webpack_require__(188);
+
+	var _About = __webpack_require__(187);
+
+	var _About2 = _interopRequireDefault(_About);
+
+	var _TableGame = __webpack_require__(251);
+
+	var _TableGame2 = _interopRequireDefault(_TableGame);
+
+	var _TableGameController = __webpack_require__(286);
+
+	var _TableGameController2 = _interopRequireDefault(_TableGameController);
+
+	var _Account = __webpack_require__(254);
+
+	var _Account2 = _interopRequireDefault(_Account);
+
+	var _history = __webpack_require__(198);
+
+	var _history2 = _interopRequireDefault(_history);
+
+	var _SignIn = __webpack_require__(255);
+
+	var _SignIn2 = _interopRequireDefault(_SignIn);
+
+	var _AccountInfo = __webpack_require__(282);
+
+	var _AccountInfo2 = _interopRequireDefault(_AccountInfo);
+
+	var _RoomList = __webpack_require__(283);
+
+	var _RoomList2 = _interopRequireDefault(_RoomList);
+
+	var _reactRedux = __webpack_require__(209);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var redux = __webpack_require__(224);
+	var username = function username() {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+	  var action = arguments[1];
+
+	  switch (action.type) {
+	    case 'LOG_IN':
+	      return action.username;
+	    case 'LOG_OUT':
+	      return null;
+	    default:
+	      return state;
+	  }
+	};
+	var roomin = function roomin() {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+	  var action = arguments[1];
+
+	  switch (action.type) {
+	    case 'joinroom':
+	      return action.roomin;
+	    case 'outroom':
+	      return null;
+	    default:
+	      return state;
+	  }
+	};
+	var reducer = redux.combineReducers({ username: username });
+	var store = redux.createStore(reducer);
+	var reducer1 = redux.combineReducers({ roomin: roomin });
+	var store1 = redux.createStore(reducer1);
+
+	//store.dispatch({type:'LOG_IN',username:'abc'});
+	//store1.dispatch({type: 'joinroom', roomin: '12'});
+	window.add = function add() {
+	  store1.dispatch({ type: 'joinroom', roomin: '12' });
+	};
+
+	var HomePage = function (_React$Component) {
+	  _inherits(HomePage, _React$Component);
+
+	  function HomePage() {
+	    _classCallCheck(this, HomePage);
+
+	    return _possibleConstructorReturn(this, (HomePage.__proto__ || Object.getPrototypeOf(HomePage)).apply(this, arguments));
+	  }
+
+	  _createClass(HomePage, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(
+	          _reactRouterDom.BrowserRouter,
+	          { history: _history2.default },
+	          _react2.default.createElement(
+	            'div',
+	            null,
+	            _react2.default.createElement(
+	              'ul',
+	              null,
+	              _react2.default.createElement(
+	                'li',
+	                null,
+	                _react2.default.createElement(
+	                  _reactRouterDom.Link,
+	                  { to: '/' },
+	                  'Home'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'li',
+	                null,
+	                _react2.default.createElement(
+	                  _reactRouterDom.Link,
+	                  { to: '/about' },
+	                  'About'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'li',
+	                null,
+	                _react2.default.createElement(
+	                  _reactRouterDom.Link,
+	                  { to: '/room' },
+	                  'Room'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'li',
+	                null,
+	                _react2.default.createElement(
+	                  _reactRouterDom.Link,
+	                  { to: '/tablegame' },
+	                  'TableGame'
+	                )
+	              ),
+	              ' ',
+	              _react2.default.createElement(
+	                'li',
+	                null,
+	                _react2.default.createElement(
+	                  _reactRouterDom.Link,
+	                  { to: '/tablegamecontroller' },
+	                  'tablegamecontroller'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'li',
+	                null,
+	                _react2.default.createElement(
+	                  _reactRouterDom.Link,
+	                  { to: '/topics' },
+	                  'Topics'
+	                )
+	              )
+	            ),
+	            _react2.default.createElement('hr', null),
+	            _react2.default.createElement(
+	              _reactRedux.Provider,
+	              { store: store },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'main-route-place' },
+	                _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _Account2.default }),
+	                _react2.default.createElement(_reactRouterDom.Route, { path: '/about', component: _About2.default }),
+	                _react2.default.createElement(_reactRouterDom.Route, { path: '/tablegame', component: _TableGame2.default }),
+	                _react2.default.createElement(
+	                  _reactRedux.Provider,
+	                  { store: store1 },
+	                  _react2.default.createElement(_reactRouterDom.Route, { path: '/room', component: _AccountInfo2.default })
+	                ),
+	                _react2.default.createElement(_reactRouterDom.Route, { path: '/tablegamecontroller', component: _TableGameController2.default }),
+	                _react2.default.createElement(_reactRouterDom.Route, { path: '/topics', component: Topics })
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return HomePage;
+	}(_react2.default.Component);
+
+	var Topics = function (_React$Component2) {
+	  _inherits(Topics, _React$Component2);
+
+	  function Topics() {
+	    _classCallCheck(this, Topics);
+
+	    return _possibleConstructorReturn(this, (Topics.__proto__ || Object.getPrototypeOf(Topics)).apply(this, arguments));
+	  }
+
+	  _createClass(Topics, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(
+	          'h2',
+	          null,
+	          'Topics'
+	        ),
+	        _react2.default.createElement(
+	          'ul',
+	          null,
+	          _react2.default.createElement(
+	            'li',
+	            null,
+	            _react2.default.createElement(
+	              _reactRouterDom.Link,
+	              { to: this.props.match.url + '/rendering' },
+	              'Rendering with React'
+	            )
+	          ),
+	          _react2.default.createElement(
+	            'li',
+	            null,
+	            _react2.default.createElement(
+	              _reactRouterDom.Link,
+	              { to: this.props.match.url + '/components' },
+	              'Components'
+	            )
+	          ),
+	          _react2.default.createElement(
+	            'li',
+	            null,
+	            _react2.default.createElement(
+	              _reactRouterDom.Link,
+	              { to: this.props.match.url + '/props-v-state' },
+	              'Props v. State'
+	            )
+	          )
+	        ),
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'secondary-route-place' },
+	          _react2.default.createElement(_reactRouterDom.Route, {
+	            path: this.props.match.url + '/:topicId',
+	            component: Topic }),
+	          _react2.default.createElement(_reactRouterDom.Route, {
+	            exact: true,
+	            path: this.props.match.url,
+	            render: function render() {
+	              return _react2.default.createElement(
+	                'h3',
+	                null,
+	                'Please select a topic.'
+	              );
+	            }
+	          })
+	        )
+	      );
+	    }
+	  }]);
+
+	  return Topics;
+	}(_react2.default.Component);
+
+	var Topic = function (_React$Component3) {
+	  _inherits(Topic, _React$Component3);
+
+	  function Topic() {
+	    _classCallCheck(this, Topic);
+
+	    return _possibleConstructorReturn(this, (Topic.__proto__ || Object.getPrototypeOf(Topic)).apply(this, arguments));
+	  }
+
+	  _createClass(Topic, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(
+	          'h3',
+	          null,
+	          this.props.match.params.topicId
+	        )
+	      );
+	    }
+	  }]);
+
+	  return Topic;
+	}(_react2.default.Component);
+
+	module.exports = HomePage;
+
+/***/ }),
 /* 286 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRouterDom = __webpack_require__(188);
+
+	var _reactRedux = __webpack_require__(209);
+
+	var _HomePage = __webpack_require__(285);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // var socket = io('http://localhost:8000');
+
+
+	var Cell = __webpack_require__(252);
+	var TableGame = __webpack_require__(251);
+	var RoomList = __webpack_require__(283);
+
+	var play = false;
+	var count = 0;
+	var matrix = [];
+	for (var i = 0; i < 20; i++) {
+	    var row = [];
+	    for (var j = 0; j < 20; j++) {
+	        row.push(0);
+	    }
+	    matrix.push(row);
+	}
+	var countTurn = 0;
+	var flag = true;
+	var XO;
+
+	var TableGameController = function (_React$Component) {
+	    _inherits(TableGameController, _React$Component);
+
+	    function TableGameController(props) {
+	        _classCallCheck(this, TableGameController);
+
+	        return _possibleConstructorReturn(this, (TableGameController.__proto__ || Object.getPrototypeOf(TableGameController)).call(this, props));
+	    }
+	    //   window.clickRoom = function clickRoom(id){
+
+	    //     window.alert("id" + id);
+	    //    }
+
+
+	    _createClass(TableGameController, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                null,
+	                _react2.default.createElement(
+	                    'h3',
+	                    null,
+	                    'Hellooo'
+	                ),
+	                _react2.default.createElement(Cell, { myEvent: Hello }),
+	                _react2.default.createElement(RoomList, null)
+	            );
+	        }
+	    }]);
+
+	    return TableGameController;
+	}(_react2.default.Component);
+
+	// socket.on("server-send-result", function (data) {
+	//     alert(data);
+	//     document.getElementById("tb-match").innerHTML = "";
+	//     buildTable();
+
+
+	// });
+
+	// socket.on("server-send-cell", function (data) {
+	//     var i = data.row;
+	//     var j = data.col;
+	//     var w = i.toString() + j.toString();
+	//     var cell;
+	//     count = data.countPlay;
+	//     if (data.value == 1) {
+	//         cell = "X";
+	//         document.getElementById("turn").innerHTML = "Đến lượt O";
+
+	//     }
+	//     else {
+	//         cell = "O";
+	//         document.getElementById("turn").innerHTML = "Đến lượt X";
+	//     }
+	//     if (XO == cell) {
+	//         flag = false;
+	//     }
+	//     else {
+	//         flag = data.go;
+	//     }
+	//     matrix[i][j] = data.value;
+	//     document.getElementById(w).innerHTML = cell;
+	// });
+
+
+	// buildTable();
+	// Hello();
+
+
+	function Hello() {
+	    alert("Hiiii");
+	}
+
+	module.exports = (0, _reactRedux.connect)()(TableGameController);
+
+/***/ }),
+/* 287 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -30631,67 +30798,34 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	;
+	var Viewer = function (_React$Component) {
+	  _inherits(Viewer, _React$Component);
 
-	var Team = function (_React$Component) {
-	    _inherits(Team, _React$Component);
+	  function Viewer() {
+	    _classCallCheck(this, Viewer);
 
-	    function Team(props) {
-	        _classCallCheck(this, Team);
+	    return _possibleConstructorReturn(this, (Viewer.__proto__ || Object.getPrototypeOf(Viewer)).apply(this, arguments));
+	  }
 
-	        var _this = _possibleConstructorReturn(this, (Team.__proto__ || Object.getPrototypeOf(Team)).call(this, props));
-
-	        _this.myEventActive = _this.myEventActive.bind(_this);
-	        return _this;
+	  _createClass(Viewer, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(
+	          'p',
+	          null,
+	          this.props.viewer
+	        )
+	      );
 	    }
+	  }]);
 
-	    _createClass(Team, [{
-	        key: "myEventActive",
-	        value: function myEventActive() {
-	            this.props.myEvent();
-	        }
-	    }, {
-	        key: "render",
-	        value: function render() {
-	            return _react2.default.createElement(
-	                "div",
-	                null,
-	                _react2.default.createElement(
-	                    "div",
-	                    { id: "room-right-x" },
-	                    _react2.default.createElement(
-	                        "h3",
-	                        null,
-	                        "Team X"
-	                    ),
-	                    _react2.default.createElement(
-	                        "h2",
-	                        null,
-	                        "2"
-	                    )
-	                ),
-	                _react2.default.createElement(
-	                    "div",
-	                    { id: "room-right-o" },
-	                    _react2.default.createElement(
-	                        "h3",
-	                        null,
-	                        "Team O"
-	                    ),
-	                    _react2.default.createElement(
-	                        "h2",
-	                        null,
-	                        "2"
-	                    )
-	                )
-	            );
-	        }
-	    }]);
-
-	    return Team;
+	  return Viewer;
 	}(_react2.default.Component);
 
-	module.exports = Team;
+	module.exports = Viewer;
 
 /***/ })
 /******/ ]);

@@ -6,17 +6,20 @@ import { connect } from 'react-redux';
 var Cell = require('Cell');
 var Team = require("./Team");
 
+
+
+
 class TableGame extends React.Component {
     constructor(props) {
         super(props);
         this.changeState = this.changeState.bind(this);
         this.state = {
-            statePlayer: "Join Room"
+            statePlayer: "Play"
         }
 
     }
     changeState() {
-        this.state.statePlayer = "In Room";
+        this.state.statePlayer = "Play";
         this.setState(this.state);
     }
     render() {
@@ -64,6 +67,12 @@ function buildTable() {
         document.getElementById("room-right")
 
     );
+    // ReactDOM.render(
+    //     <div id = "main-game-left">
+    //         <h3>Danh sach nguoi trong phon</h3>
+    //     </div>,
+    //     document.getElementById("main-game")
+    // );
 }
 
 module.exports = TableGame;

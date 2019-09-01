@@ -15,6 +15,10 @@ server.listen(8000, function () {
 
 });
 
+var listIdSocket = [];
+var listRoom = [];
+listUserRoom = [];
+
 var a = 20;
 var b = 20;
 var matrix = [];
@@ -39,44 +43,82 @@ io.on('connection', function (socket) {
       password: "",
       database: "caro"
     });
-    
-   
+
+
     con.connect(function (err) {
       if (err) throw err;
       con.query("SELECT * FROM user ", function (err, result, fields) {
         if (err) { throw err; }
-       
+
         for (var i = 0; i < result.length; i++) {
           if (result[i]["name"] == un && result[i]["password"] == ps) {
             socket.userName = un;
-            
-
             res.send('success1');
             console.log('ok');
             return con;
           }
-          
+
         }
-       res.send('acb');
+        res.send('acb');
         return con;
       });
     });
   });
-  
+
   console.log('a user connected : ' + socket.id);
+  listIdSocket.push(socket.id);
   // socket.userName = socketUsername;
   socket.on("client-send-hello", function (data) {
     console.log("Client said : " + data);
   });
+  socket.on("client-send-name-room", function (data) {
+    // console.log("Nam room : " + data);
+    // listUserRoom.push(socket.Username);
+
+    //Tham gia vao 1 phong cua socket co trc
+    socket.join(data);
+    socket.nameRoom = data;
+    //gui lai ten phong hien tai cua socket
+    socket.emit("server-send-name-room", socket.nameRoom);
+    //lay ra tat ca cac phong dang co trong socket    
+    for (var x in io.sockets.adapter.rooms) {
+      // console.log(x);
+      // console.log(io.sockets.clients(x));
+    }
+    var u = io.sockets.adapter.rooms[data].sockets;
+    console.log("List User in room " + socket.nameRoom);
+    console.log(typeof u);
+    console.log(u);
+    for(a in u){
+      console.log(a);
+      listUserRoom.push(a);
+    }
+    io.sockets.in(socket.nameRoom).emit("server-send-user-in-room", listUserRoom);
+
+    //danh sach cac room dang co nguoi
+    listRoom = [];
+    for (var x in socket.adapter.rooms) {
+      listRoom.push(x);
+    }
+    //tim ra room la socketid xong xoa no khoi danh sach room
+    for (var i = 0; i < listIdSocket.length; i++) {
+      var index = listRoom.indexOf(listIdSocket[i]);
+      if (index > -1) {
+        listRoom.splice(index, 1);
+      }
+    }
+    console.log(listRoom);
+    io.sockets.emit("server-send-list-room", listRoom);
+  });
   socket.on("client-send-cell", function (data) {
     console.log(data);
     matrix[data.row][data.col] = data.value;
-    io.sockets.emit("server-send-cell", data);
-    // io.sockets.in(socket.nameRoom).emit("server-send-cell", data);
+    // io.sockets.emit("server-send-cell", data);
+    io.sockets.in(socket.nameRoom).emit("server-send-cell", data);
     var result = checkwin(data.value, data.row, data.col);
     if (result != undefined) {
       console.log("End game : " + result);
-      // io.sockets.in(socket.nameRoom).emit("server-send-result", result);
+      io.sockets.in(socket.nameRoom).emit("server-send-result", result);
       io.sockets.emit("server-send-result", result);
       matrix = [];
       for (var i = 0; i < a; i++) {
