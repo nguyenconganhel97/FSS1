@@ -14,6 +14,12 @@ server.listen(8000, function () {
   console.log("Server running");
 
 });
+var con = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "caro"
+});
 
 var listIdSocket = [];
 var listRoom = [];
@@ -37,14 +43,19 @@ io.on('connection', function (socket) {
   app.post('/signin', jsonParser, (req, res) => {
     var un = req.body.fullname;
     var ps = req.body.password;
-    var con = mysql.createConnection({
-      host: "localhost",
-      user: "root",
-      password: "",
-      database: "caro"
-    });
 
 
+
+
+  });
+
+  console.log('a user connected : ' + socket.id);
+  listIdSocket.push(socket.id);
+  // socket.userName = socketUsername;
+  socket.on("server-send-login", function (data) {
+    un = data.username;
+    ps = data.password;
+    console.log("userrrrr : " + data.username);
     con.connect(function (err) {
       if (err) throw err;
       con.query("SELECT * FROM user ", function (err, result, fields) {
@@ -53,21 +64,19 @@ io.on('connection', function (socket) {
         for (var i = 0; i < result.length; i++) {
           if (result[i]["name"] == un && result[i]["password"] == ps) {
             socket.userName = un;
-            res.send('success1');
-            console.log('ok');
+            console.log('okkkkkkkkk');
+            socket.emit("server-send-login-sucess","True");
             return con;
+          }
+          else{
+            socket.emit("server-send-login-sucess","Fail");
           }
 
         }
-        res.send('acb');
         return con;
       });
     });
   });
-
-  console.log('a user connected : ' + socket.id);
-  listIdSocket.push(socket.id);
-  // socket.userName = socketUsername;
   socket.on("client-send-hello", function (data) {
     console.log("Client said : " + data);
   });
@@ -89,7 +98,7 @@ io.on('connection', function (socket) {
     console.log("List User in room " + socket.nameRoom);
     console.log(typeof u);
     console.log(u);
-    for(a in u){
+    for (a in u) {
       console.log(a);
       listUserRoom.push(a);
     }

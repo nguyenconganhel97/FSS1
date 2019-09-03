@@ -13,6 +13,7 @@ import Cell from "Cell";
 var Menu = require("./components/Menu.js");
 var RoomList = require("./components/RoomList");
 var Viewer = require("./components/Viewer");
+var Login = require("./components/Login");
 
 var HomePage = require('HomePage');
 // var Cell = require('Cell');
@@ -32,29 +33,49 @@ var flag = true;
 var XO;
 
 
+//render ra menu
+// ReactDOM.render(
+//   <div>
+//     {/* <Cell myEvent = {Hello}></Cell> */}
+//     {/* <TableGame match="match" turn="turn" tbmatch="tb-match"></TableGame> */}
+//     <Menu homeRoom={HomeRoom}></Menu>
+//     {/* <Cell myEvent = {Hello}></Cell> */}
+//   </div>
+//   ,
+//   document.getElementById('main-menu')
+// );
 
-ReactDOM.render(
-  <div>
-    {/* <Cell myEvent = {Hello}></Cell> */}
-    {/* <TableGame match="match" turn="turn" tbmatch="tb-match"></TableGame> */}
-    <Menu homeRoom={HomeRoom}></Menu>
-    {/* <Cell myEvent = {Hello}></Cell> */}
-  </div>
-  ,
-  document.getElementById('main-menu')
-);
+//Trang home sau khi dang nhap xong se hien ra
 function HomeRoom() {
   ReactDOM.render(
     <div>
+      <Menu homeRoom={HomeRoom}></Menu>
       <RoomList ></RoomList>
     </div>,
     document.getElementById("main-game")
   );
 }
+//function test
 function Hello() {
   alert("Hihii");;
   ReactDOM.unmountComponentAtNode(document.getElementById('root'));
 }
+//ket qua login duoc server gui ve
+socket.on("server-send-login-sucess", function (data) {
+
+  if (data == "True") {
+    alert("Login Success!");
+    document.getElementById("main").style.display = 'block';
+    ReactDOM.unmountComponentAtNode(document.getElementById('login'));
+    HomeRoom();
+
+  }
+  else {
+    alert("Login Fail");
+    <Login myEvent={checkLogin}></Login>
+  }
+});
+//server send ve danh sach cac user trong room
 socket.on("server-send-user-in-room", function (data) {
   // document.getElementById("user-in-room").innerHTML = "";
   ReactDOM.render(
@@ -71,17 +92,20 @@ socket.on("server-send-user-in-room", function (data) {
 
 
 });
+//server send lai ket qua danh cua van co
 socket.on("server-send-result", function (data) {
   alert(data);
   document.getElementById("main-game").innerHTML = "";
   ReactDOM.render(
     <div id="main-game-center">
+      {/* <Menu homeRoom={HomeRoom}></Menu> */}
       <TableGame match="match" turn="turn" tbmatch="tb-match"></TableGame>
     </div>,
     document.getElementById("main-game")
   );
 
 });
+//server send ban co xuong client
 socket.on("server-send-cell", function (data) {
   var i = data.row;
   var j = data.col;
@@ -106,6 +130,7 @@ socket.on("server-send-cell", function (data) {
   matrix[i][j] = data.value;
   document.getElementById(w).innerHTML = cell;
 });
+//ham xu ly danh co
 window.change = function change(myobj) {
   var excep = false;
   if (flag == true) {
@@ -146,12 +171,14 @@ window.change = function change(myobj) {
 
 
 }
+//ham xu ly khi click vao 1 room nao do
 window.clickRoom = function clickRoom(idRoom) {
   alert("ID : " + idRoom);
 
   socket.emit("client-send-name-room", idRoom);
   ReactDOM.render(
     <div>
+      <Menu homeRoom={HomeRoom}></Menu>
       <div id="main-game-left">
         <h3>Danh sách người trong phòng</h3>
         <div id="user-in-room">
@@ -166,12 +193,18 @@ window.clickRoom = function clickRoom(idRoom) {
   );
 
 }
+//ham xu ly khi nhan vao login va gui len server
+function checkLogin(username, password) {
+  socket.emit("server-send-login", { username: username, password: password });
+}
 $(document).ready(function () {
+  document.getElementById("main").style.display = 'none';
   ReactDOM.render(
     <div>
-      <RoomList ></RoomList>
+      {/* <RoomList ></RoomList> */}
+      <Login myEvent={checkLogin}></Login>
     </div>,
-    document.getElementById("main-game")
+    document.getElementById("login")
   );
 
 });
