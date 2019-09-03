@@ -20,10 +20,14 @@ var con = mysql.createConnection({
   password: "",
   database: "caro"
 });
-
+con.connect();
 var listIdSocket = [];
 var listRoom = [];
-listUserRoom = [];
+var listUserIdRoom = [];
+//chua danh sach object socket va name cua socket
+var listUserOnline = new Array();
+//danh name sach cac nguoi trong 1 room
+var listUserInRoom = new Array();
 
 var a = 20;
 var b = 20;
@@ -40,15 +44,6 @@ app.get('/', (req, res) => res.render('home'));
 
 
 io.on('connection', function (socket) {
-  app.post('/signin', jsonParser, (req, res) => {
-    var un = req.body.fullname;
-    var ps = req.body.password;
-
-
-
-
-  });
-
   console.log('a user connected : ' + socket.id);
   listIdSocket.push(socket.id);
   // socket.userName = socketUsername;
@@ -56,33 +51,44 @@ io.on('connection', function (socket) {
     un = data.username;
     ps = data.password;
     console.log("userrrrr : " + data.username);
-    con.connect(function (err) {
-      if (err) throw err;
-      con.query("SELECT * FROM user ", function (err, result, fields) {
-        if (err) { throw err; }
 
+    con.query('SELECT * FROM user', function (err, result) {
+      if (err) {
+        console.log("Erro");
+        // res.render("/userLog/log.ejs");
+      }
+      else {
+        console.log(result);
+        // var array = result.rows;
+        console.log("**********");
+        var array = [];
+        array = result;
         for (var i = 0; i < result.length; i++) {
           if (result[i]["name"] == un && result[i]["password"] == ps) {
             socket.userName = un;
+            var object = {
+              id: socket.id,
+              name: socket.userName
+            }
+            listUserOnline.push(object);
             console.log('okkkkkkkkk');
-            socket.emit("server-send-login-sucess","True");
-            return con;
+            socket.emit("server-send-login-sucess", "True");
           }
-          else{
-            socket.emit("server-send-login-sucess","Fail");
+          else {
+            // socket.emit("server-send-login-sucess", "Fail");
           }
 
         }
-        return con;
-      });
+      }
     });
+
   });
   socket.on("client-send-hello", function (data) {
     console.log("Client said : " + data);
   });
   socket.on("client-send-name-room", function (data) {
     // console.log("Nam room : " + data);
-    // listUserRoom.push(socket.Username);
+    // listUserIdRoom.push(socket.Username);
 
     //Tham gia vao 1 phong cua socket co trc
     socket.join(data);
@@ -98,11 +104,29 @@ io.on('connection', function (socket) {
     console.log("List User in room " + socket.nameRoom);
     console.log(typeof u);
     console.log(u);
+    listUserIdRoom = [];
     for (a in u) {
       console.log(a);
-      listUserRoom.push(a);
+      listUserIdRoom.push(a);
     }
-    io.sockets.in(socket.nameRoom).emit("server-send-user-in-room", listUserRoom);
+    console.log("00000000000");
+    console.log(listUserOnline);
+    console.log(listUserIdRoom);
+    console.log(111111);
+    listUserInRoom = [];
+    for (var x = 0; x < listUserOnline.length; x++) {
+      // console.log(listUserOnline[x]["id"]);
+      for (var y = 0; y < listUserIdRoom.length; y++) {
+        if (listUserIdRoom[y] == listUserOnline[x]["id"]) {
+          listUserInRoom.push(listUserOnline[x]["name"]);
+        }
+      }
+
+
+    }
+    console.log("AAAAaa");
+    console.log(listUserInRoom);
+    io.sockets.in(socket.nameRoom).emit("server-send-user-in-room", listUserInRoom);
 
     //danh sach cac room dang co nguoi
     listRoom = [];
@@ -220,32 +244,3 @@ function checkwin(numberCheck, trow, tcol) {
     return (k + " Win :)");
   }
 }
-
-
-// app.post('/signin', jsonParser, (req, res) => {
-//   var un = req.body.fullname;
-//   var ps = req.body.password;
-//   var con = mysql.createConnection({
-//     host: "localhost",
-//     user: "root",
-//     password: "",
-//     database: "caro"
-//   });
-
-//   con.connect(function (err) {
-//     if (err) throw err;
-//     con.query("SELECT * FROM user ", function (err, result, fields) {
-//       if (err) { throw err; }
-//       console.log(result);
-//       for(var i = 0; i < result.length; i++){
-//         if(result[i]["name"] == un && result[i]["password"] == ps){
-
-//           res.send('success1');
-//           console.log('ok');
-//           return con;
-//         }
-//       }
-//       res.send('Failure');
-//     });
-//   });
-// });

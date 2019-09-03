@@ -97,9 +97,16 @@ socket.on("server-send-result", function (data) {
   alert(data);
   document.getElementById("main-game").innerHTML = "";
   ReactDOM.render(
-    <div id="main-game-center">
-      {/* <Menu homeRoom={HomeRoom}></Menu> */}
-      <TableGame match="match" turn="turn" tbmatch="tb-match"></TableGame>
+    <div>
+      <Menu homeRoom={HomeRoom}></Menu>
+      <div id="main-game-left">
+        <h3>Danh sách người trong phòng</h3>
+        <div id="user-in-room">
+        </div>
+      </div>
+      <div id="main-game-center">
+        <TableGame match="match" turn="turn" tbmatch="tb-match"></TableGame>
+      </div>
     </div>,
     document.getElementById("main-game")
   );

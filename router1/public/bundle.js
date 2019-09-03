@@ -173,8 +173,23 @@
 	  document.getElementById("main-game").innerHTML = "";
 	  _reactDom2.default.render(_react2.default.createElement(
 	    'div',
-	    { id: 'main-game-center' },
-	    _react2.default.createElement(_TableGame2.default, { match: 'match', turn: 'turn', tbmatch: 'tb-match' })
+	    null,
+	    _react2.default.createElement(Menu, { homeRoom: HomeRoom }),
+	    _react2.default.createElement(
+	      'div',
+	      { id: 'main-game-left' },
+	      _react2.default.createElement(
+	        'h3',
+	        null,
+	        'Danh s\xE1ch ng\u01B0\u1EDDi trong ph\xF2ng'
+	      ),
+	      _react2.default.createElement('div', { id: 'user-in-room' })
+	    ),
+	    _react2.default.createElement(
+	      'div',
+	      { id: 'main-game-center' },
+	      _react2.default.createElement(_TableGame2.default, { match: 'match', turn: 'turn', tbmatch: 'tb-match' })
+	    )
 	  ), document.getElementById("main-game"));
 	});
 	//server send ban co xuong client
